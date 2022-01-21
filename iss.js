@@ -46,7 +46,34 @@ const fetchFlyoverTimes = function(coordinates, callback) {
   });
 };
 
+const nextISSTimesForMyLocation = function(callback) {
+  fetchMyIP((error, IP) => {
+    if (error) {
+      //console.log('it didnt work :(', error);
+      return callback (error, null);
+    }
+    //console.log('it worked :) returned IP: ', IP);
+
+    fetchCoordsByIP(IP, (error, data) => {
+      if (error) {
+        //console.log(`Could not retrieve coordinates: ${error}`);
+        return callback (error, null);
+      }
+      //console.log('Coordinates fetched: ', data);
+
+      fetchFlyoverTimes(data, (error, times) => {
+        if (error) {
+          //console.log('unsuccessful: ', error);
+          return callback (error, null);
+        }
+        //console.log('success! The flyover times are: ', times);
+        callback(null, times);
+      });
+    });
+  });
+};
 
 
 
-module.exports = { fetchMyIP, fetchCoordsByIP, fetchFlyoverTimes };
+
+module.exports = { nextISSTimesForMyLocation };
